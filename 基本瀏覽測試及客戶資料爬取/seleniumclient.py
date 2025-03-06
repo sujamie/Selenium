@@ -69,13 +69,6 @@ try:
     #  抓取所有 figcaption 類別的內容
     elements = driver.find_elements(By.CLASS_NAME, "figcaption")
 
-    #  顯示抓取結果
-    if elements:
-        print(" 成功找到 figcaption 類別的元素，內容如下：")
-        for index, element in enumerate(elements, start=1):
-            print(f"{index}. {element.text.strip()}")
-    else:
-        print(" 未找到任何 figcaption 類別的元素！")
 
  #  儲存結果
     client_data = []
@@ -108,6 +101,20 @@ try:
         for row in ws.iter_rows(min_row=1, max_row=ws.max_row, min_col=1, max_col=1):
             for cell in row:
                 cell.alignment = Alignment(horizontal="left")
+
+        # **自動調整儲存格大小**
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column_letter  # 獲取欄位名稱
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2)  # 增加2以避免內容過於貼近儲存格邊緣
+            ws.column_dimensions[column].width = adjusted_width
+
 
         # 儲存 Excel 檔案
         wb.save(excel_filename)
